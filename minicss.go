@@ -3,6 +3,7 @@ package minicss
 func Minify(data []byte) []byte {
 	out := make([]byte, 0, len(data))
 
+	prev_space := false
 	for i := 0; i < len(data); i += 1 {
 		a := data[i]
 
@@ -33,11 +34,6 @@ func Minify(data []byte) []byte {
 			}
 		}
 
-		// https://pkg.go.dev/unicode#IsSpace
-		if a == '\t' || a == '\n' || a == '\v' || a == '\f' || a == '\r' || a == ' ' || a == '\u0085' || a == '\u00A0' {
-			continue
-		}
-
 		// String
 		if a == '\'' || a == '"' {
 			for _, b := range data[i+1:] {
@@ -50,6 +46,20 @@ func Minify(data []byte) []byte {
 			continue
 		}
 
+		// https://pkg.go.dev/unicode#IsSpace
+		if a == '\n' {
+			continue
+		}
+
+		if a == '\t' || a == '\v' || a == '\f' || a == '\r' || a == ' ' || a == '\u0085' || a == '\u00A0' {
+			if !prev_space && len(out) > 0 {
+				out = append(out, ' ')
+				prev_space = true
+			}
+			continue
+		}
+
+		prev_space = false
 		out = append(out, a)
 	}
 

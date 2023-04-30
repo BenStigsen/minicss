@@ -17,17 +17,16 @@ func Minify(data []byte) []byte {
 			// Block comment
 			} else if data[i+1] == '*' {
 				for i < len(data)-1 {
-					i += 1
-
 					if data[i] == '*' && data[i+1] == '/' {
 						break
 					}
+					i += 1
 				}
 
-				if data[i+1] != '/' {
-					out = append(out, data[start:i+1]...)
-				} else {
+				if i < len(data) - 1 && data[i+1] == '/' {
 					i += 1
+				} else {
+					out = append(out, data[start:i+1]...)
 				}
 
 				continue
